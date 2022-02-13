@@ -19,7 +19,7 @@ public class ArrayList<E> implements List<E> {
 
     //생성자2 (초기 공간 할당함.)
     public ArrayList(int capacity){
-        this.array = Object[capacity];
+        this.array = new Object[capacity];
         this.size = 0;
     }
 
@@ -90,47 +90,100 @@ public class ArrayList<E> implements List<E> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public E remove(int index) {
-        return null;
+        if(index >= size || index < 0){
+            throw new IndexOutOfBoundsException();
+        }
+
+        E element = (E)array[index]; //삭제될 요소를 반환하기 위해서 임시로 담아둔다.
+        array[index] = null; //index에 해당하는 배열값을 null값으로 삭제한다.
+
+        for(int i = index ; i < size ; i++){
+            array[i] = array[i+1];
+            array[i+1] = null;
+        }
+        size--;
+        resize();
+        return element;
+        //원본 데이터 타입으로 반환하기 위해 E타입으로 캐스팅해준다.
+
     }
 
     @Override
     public boolean remove(Object value) {
-        return false;
+        if(indexOf(value)>0){
+            int index = indexOf(value);
+            remove(index);
+            return true;
+        }else{
+            return false;
+        }
+
+
+
+
     }
 
+
+    @SuppressWarnings("unchecked")
     @Override
     public E get(int index) {
-        return null;
+        if(index >= size || index < 0) {//범위 벗어나면 예외가 발생한다.
+            throw new IndexOutOfBoundsException();
+        }
+        //Object 타입에서 E타입으로 캐스팅 후 반환
+        return (E)array[index];
     }
 
     @Override
     public void set(int index, E value) {
-
+        if (index >= size || index < 0){
+            throw new IndexOutOfBoundsException();
+        }else{
+            array[index] = value;
+        }
     }
 
     @Override
     public boolean contains(Object value) {
-        return false;
+
+        if(indexOf(value) >= 0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override
     public int indexOf(Object value) {
-        return 0;
+        //사용자가 찾고자하는 요소(value)의 위치(index)를 반환하는 메소드
+        for(int i = 0 ; i < array.length; i++){
+            if(array[i].equals(value)){
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0; //요소가 0개일 경우, 비어있다는 의미이므로 true반환
     }
 
     @Override
     public void clear() {
+        for(int i = 0 ; i < size ; i++){
+            array[i] = null;
+        }
+        size = 0;
+        resize();
 
     }
 }
